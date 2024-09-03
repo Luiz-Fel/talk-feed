@@ -1,8 +1,15 @@
 import { Avatar } from "./Avatar";
 import { Comment } from "./Comment";
 import styles from "./Post.module.css";
+
+import { elapsedTime, formatDate } from "../utils/dateFormat.js";
 export function Post({ author, content: postContent, publishedAt }) {
   const { name, role, avatar } = author;
+
+  const formattedDate = formatDate(publishedAt);
+
+  const elapsedTimeDate = elapsedTime(publishedAt);
+
   return (
     <article className={styles.post}>
       <header>
@@ -14,8 +21,8 @@ export function Post({ author, content: postContent, publishedAt }) {
           </div>
         </div>
 
-        <time dateTime={publishedAt} title="August 11th at 8:13 am">
-          Posted 1 hour ago
+        <time dateTime={publishedAt} title={formattedDate}>
+          {elapsedTimeDate}
         </time>
       </header>
 
