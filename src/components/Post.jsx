@@ -1,38 +1,47 @@
 import { Avatar } from "./Avatar";
 import { Comment } from "./Comment";
 import styles from "./Post.module.css";
-export function Post() {
+export function Post({ author, content: postContent, publishedAt }) {
+  const { name, role, avatar } = author;
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar imageUrl="https://github.com/Luiz-Fel.png"
-          />
+          <Avatar imageUrl={avatar} />
           <div className={styles.authorInfo}>
-            <strong>Luiz Pereira</strong>
-            <span>Web Developer</span>
+            <strong>{name}</strong>
+            <span>{role}</span>
           </div>
         </div>
 
-        <time dateTime="2024-11-08 08:13:30am" title="August 11th at 8:13 am">
+        <time dateTime={publishedAt} title="August 11th at 8:13 am">
           Posted 1 hour ago
         </time>
       </header>
 
       <div className={styles.content}>
-        <p>Hey guys 👋</p>
-        <p>
-          I just uploaded another project to my portfolio. It's a project I did
-          at NLW Return, a Rocketseat event. The name of the project is
-          DoctorCare 🚀
-        </p>
-        <p>
-          <a href="">jane.design/doctorcare</a>
-        </p>
-        <p>
-          <a href="">#newproject</a> <a href="">#nlw</a>{" "}
-          <a href="">#rocketseat</a>
-        </p>
+        {postContent.map((item, index) => {
+          const { type, content, href } = item;
+          if (type === "link" && href !== undefined) {
+            return (
+              <a key={href} href={href}>
+                {content}
+              </a>
+            );
+          } else if (type === "hashtags") {
+            return (
+              <p key={"hashtag " + index}>
+                {content.map((hashtag) => (
+                  <a key={hashtag.href} href={hashtag.href}>
+                    {hashtag.content}
+                  </a>
+                ))}
+              </p>
+            );
+          } else {
+            return <p key={item.content}>{item.content}</p>;
+          }
+        })}
       </div>
 
       <form className={styles.commentForm}>
