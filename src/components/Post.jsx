@@ -3,12 +3,37 @@ import { Comment } from "./Comment";
 import styles from "./Post.module.css";
 
 import { elapsedTime, formatDate } from "../utils/dateFormat.js";
+import { useState } from "react";
 export function Post({ author, content: postContent, publishedAt }) {
   const { name, role, avatar } = author;
+
+  const [comments, setComments] = useState([
+    { content: "Very good Devon, congratulations!! 👏👏" },
+  ]);
+
+  const [newCommentText, setNewCommentText] = useState("");
 
   const formattedDate = formatDate(publishedAt);
 
   const elapsedTimeDate = elapsedTime(publishedAt);
+
+  function handlePostComment(comment) {
+    const textComment = comment.target.comment.value;
+    event.preventDefault();
+    setComments([
+      ...comments,
+      {
+        author: author,
+        content: newCommentText,
+      },
+    ]);
+
+    setNewCommentText("");
+  }
+
+  function handleNewCommentChange() {
+    setNewCommentText(event.target.value);
+  }
 
   return (
     <article className={styles.post}>
@@ -27,19 +52,19 @@ export function Post({ author, content: postContent, publishedAt }) {
       </header>
 
       <div className={styles.content}>
-        {postContent.map((item, index) => {
-          const { type, content, href } = item;
+        {postContent.map((item) => {
+          const { type, content, href, id } = item;
           if (type === "link" && href !== undefined) {
             return (
-              <a key={href} href={href}>
+              <a key={href + id} href={href}>
                 {content}
               </a>
             );
           } else if (type === "hashtags") {
             return (
-              <p key={"hashtag " + index}>
-                {content.map((hashtag) => (
-                  <a key={hashtag.href} href={hashtag.href}>
+              <p key={"hashtag " + id}>
+                {content.map((hashtag, hashtagIndex) => (
+                  <a key={hashtag.href + hashtagIndex} href={hashtag.href}>
                     {hashtag.content}
                   </a>
                 ))}
@@ -51,18 +76,32 @@ export function Post({ author, content: postContent, publishedAt }) {
         })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form
+        onSubmit={(event) => handlePostComment(event)}
+        className={styles.commentForm}
+      >
         <strong>Leave your comment</strong>
-        <textarea placeholder="Write a comment..." />
+        <textarea
+          name="comment"
+          value={newCommentText}
+          onChange={handleNewCommentChange}
+          placeholder="Write a comment..."
+        />
         <footer>
           <button type="submit">Post</button>
         </footer>
       </form>
 
       <div className={styles.commentList}>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comments.map((comment, index) => {
+          return (
+            <Comment
+              key={index}
+              author={comment?.authot}
+              content={comment?.content}
+            />
+          );
+        })}
       </div>
     </article>
   );
