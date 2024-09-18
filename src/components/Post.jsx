@@ -4,11 +4,12 @@ import styles from "./Post.module.css";
 
 import { elapsedTime, formatDate } from "../utils/dateFormat.js";
 import { useState } from "react";
+import { v4 } from "uuid";
 export function Post({ author, content: postContent, publishedAt }) {
   const { name, role, avatar } = author;
 
   const [comments, setComments] = useState([
-    { content: "Very good Devon, congratulations!! 👏👏" },
+    { content: "Very good Devon, congratulations!! 👏👏", id: v4() },
   ]);
 
   const [newCommentText, setNewCommentText] = useState("");
@@ -25,6 +26,7 @@ export function Post({ author, content: postContent, publishedAt }) {
       {
         author: author,
         content: newCommentText,
+        id: v4(),
       },
     ]);
 
@@ -33,6 +35,11 @@ export function Post({ author, content: postContent, publishedAt }) {
 
   function handleNewCommentChange() {
     setNewCommentText(event.target.value);
+  }
+
+  function deleteComment(commentId) {
+    const commentsAfterDelete = comments.filter((comment) => comment.id !== commentId);
+    setComments(commentsAfterDelete);
   }
 
   return (
@@ -97,8 +104,8 @@ export function Post({ author, content: postContent, publishedAt }) {
           return (
             <Comment
               key={index}
-              author={comment?.authot}
-              content={comment?.content}
+              comment={comment}
+              onDeleteComment={deleteComment}
             />
           );
         })}
